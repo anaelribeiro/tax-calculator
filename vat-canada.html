@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6 !important;
+      color: #111111 !important;
+      margin: 0;
+      padding: 16px 18px;
+      box-sizing: border-box;
+    }
+    label { display:block; margin:8px 0 3px 0; font-size:13px; font-weight:600; color:#111 !important; }
+    input[type="number"], input[type="text"], select {
+      width:100%; padding:8px 10px; border:2px solid #c9c9c9; border-radius:8px;
+      background:#f8f8f8; color:#111; font-size:13px; font-family:inherit; box-sizing:border-box;
+    }
+    input:focus, select:focus { outline:none; border-color:#1a73e8; }
+    .row-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+    .tax-row { background:#fff; border:1px solid #dde3f0; border-radius:8px; padding:10px 12px; margin-top:6px; }
+    .tax-row-title { font-size:11px; font-weight:700; color:#0d63af; text-transform:uppercase; margin-bottom:6px; }
+    .tax-row-title.t2 { color:#6a0dad; }
+    .checkbox-row { display:flex; align-items:center; gap:6px; margin-top:6px; font-size:13px; }
+    .checkbox-row input[type="checkbox"] { width:16px; height:16px; }
+    .section-divider { border:none; border-top:1px solid #dde3f0; margin:12px 0; }
+
+    #calculateBtn {
+      width:100%; margin-top:12px; padding:11px; border:none; border-radius:8px;
+      background:#1a73e8; color:#fff; font-size:15px; font-weight:700; font-family:inherit; cursor:pointer;
+      box-shadow:inset 0 -3px 0 rgba(0,0,0,0.15);
+    }
+    #calculateBtn:hover { background:#1557b0; }
+
+    .cards { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+    .card { background:#fff; border:1px solid #dde3f0; border-radius:8px; padding:10px 12px; }
+    .card-label { font-size:10px; color:#666; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+    .card-value { font-size:20px; font-weight:700; color:#111; margin:2px 0; }
+    .card-sub { font-size:11px; color:#888; }
+    .card-net-multi { font-size:13px; font-weight:600; color:#333; margin:2px 0; }
+    .card-tax1 .card-value { color:#0d63af; }
+    .card-tax2 .card-value { color:#6a0dad; }
+    .card-reclaim { border-color:#b6ddb6; background:#f0fff0; }
+    .card-reclaim .card-value { color:#1a7a1a; }
+
+    .formula-hint { margin-top:8px; font-size:11px; font-style:italic; color:#777; line-height:1.7; }
+    .proof-ok   { margin-top:6px; background:#e6f9ee; border:1px solid #6fcf97; border-radius:6px; padding:7px 10px; font-size:11px; color:#1a7a1a; }
+    .proof-fail { margin-top:6px; background:#ffe6e6; border:1px solid #eb5757; border-radius:6px; padding:7px 10px; font-size:11px; color:#b90000; }
+    .tips-note  { color:#b07000; }
+
+    .ref-section { margin-top:18px; }
+    .ref-title { font-size:12px; font-weight:700; color:#555; margin-bottom:6px; }
+    .ref-note { font-size:11px; color:#888; font-style:italic; margin-bottom:8px; line-height:1.5; }
+    table.ref-table { width:100%; border-collapse:collapse; font-size:11px; }
+    .ref-table th { background:#e8edf5; color:#333; padding:5px 8px; text-align:left; border:1px solid #dde3f0; }
+    .ref-table td { padding:5px 8px; border:1px solid #dde3f0; color:#333; }
+    .ref-table tr:nth-child(even) td { background:#f6f8fb; }
+    .ref-table tr.ref-highlight td { background:#dbeafe !important; font-weight:700; }
+  </style>
+</head>
+<body>
+
+  <div class="row-2">
+    <div>
+      <label for="province">Province</label>
+      <select id="province" onchange="onProvinceChange()">
+        <option value="">— Select —</option>
+        <option value="AB">AB – Alberta</option>
+        <option value="BC">BC – British Columbia</option>
+        <option value="MB">MB – Manitoba</option>
+        <option value="NT">NT – NW Territories</option>
+        <option value="NU">NU – Nunavut</option>
+        <option value="QC">QC – Quebec</option>
+        <option value="SK">SK – Saskatchewan</option>
+        <option value="YT">YT – Yukon</option>
+        <option value="NB">NB – New Brunswick</option>
+        <option value="NL">NL – Newfoundland</option>
+        <option value="NS">NS – Nova Scotia</option>
+        <option value="ON">ON – Ontario</option>
+        <option value="PE">PE – PEI</option>
+      </select>
+    </div>
+    <div>
+      <label for="expense-type">Expense Type</label>
+      <select id="expense-type">
+        <option value="100">Standard (100%)</option>
+        <option value="50">Meals &amp; Ent. (50%)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row-2">
+    <div>
+      <label for="receipt-status">Receipt Status</label>
+      <select id="receipt-status">
+        <option value="100">Tax Receipt (100%)</option>
+        <option value="100">Receipt (100%)</option>
+        <option value="0">No Receipt (0%)</option>
+      </select>
+    </div>
+    <div>
+      <label for="gross-ca">Gross amount (incl. taxes)</label>
+      <input id="gross-ca" type="number" step="0.01" placeholder="e.g. 49.45" />
+    </div>
+  </div>
+
+  <div class="row-2">
+    <div>
+      <label for="tips">Tips</label>
+      <input id="tips" type="number" step="0.01" placeholder="0.00" value="0" />
+    </div>
+    <div>
+      <label for="tips-mode">Tips Mode</label>
+      <select id="tips-mode">
+        <option value="per-tax">Per-tax (per tax authority)</option>
+        <option value="ignore">Standard / Ignore Tips</option>
+      </select>
+    </div>
+  </div>
+
+  <hr class="section-divider" />
+  <div id="tax-rows"></div>
+
+  <button id="calculateBtn">Calculate</button>
+
+  <div class="cards" id="cards" style="display:none;">
+    <div class="card card-tax1">
+      <div class="card-label" id="lbl-tax1">Tax 1</div>
+      <div class="card-value" id="val-tax1">—</div>
+      <div class="card-sub"  id="sub-tax1"></div>
+    </div>
+    <div class="card card-tax2" id="card2" style="display:none;">
+      <div class="card-label" id="lbl-tax2">Tax 2</div>
+      <div class="card-value" id="val-tax2">—</div>
+      <div class="card-sub"  id="sub-tax2"></div>
+    </div>
+    <div class="card" id="card-net">
+      <div class="card-label">Net / Base</div>
+      <div id="val-net-content">—</div>
+    </div>
+    <div class="card card-reclaim">
+      <div class="card-label">Total Reclaim</div>
+      <div class="card-value" id="val-reclaim">—</div>
+    </div>
+  </div>
+
+  <div id="formula-out"></div>
+
+  <hr class="section-divider" />
+
+  <div class="ref-section">
+    <div class="ref-title">Canada Tax Rates Reference (2026)</div>
+    <div class="ref-note">Standard Canada tax rates. Customer ERP configuration may differ. Adjust the tax rate and Tips behavior according to the customer's Tax Administration setup.</div>
+    <table class="ref-table" id="ref-table">
+      <thead><tr><th>Province</th><th>Rate Type</th><th>Provincial Rate</th><th>Canada Rate</th><th>Total</th></tr></thead>
+      <tbody>
+        <tr data-prov="AB"><td>Alberta</td>                    <td>GST</td>         <td>0%</td>     <td>5%</td><td>5%</td></tr>
+        <tr data-prov="BC"><td>British Columbia</td>           <td>GST + PST</td>   <td>7%</td>     <td>5%</td><td>12%</td></tr>
+        <tr data-prov="MB"><td>Manitoba</td>                   <td>GST + PST</td>   <td>7%</td>     <td>5%</td><td>12%</td></tr>
+        <tr data-prov="NB"><td>New Brunswick</td>              <td>HST</td>         <td>10%</td>    <td>5%</td><td>15%</td></tr>
+        <tr data-prov="NL"><td>Newfoundland and Labrador</td>  <td>HST</td>         <td>10%</td>    <td>5%</td><td>15%</td></tr>
+        <tr data-prov="NT"><td>Northwest Territories</td>      <td>GST</td>         <td>0%</td>     <td>5%</td><td>5%</td></tr>
+        <tr data-prov="NS"><td>Nova Scotia</td>                <td>HST</td>         <td>9%</td>     <td>5%</td><td>14%</td></tr>
+        <tr data-prov="NU"><td>Nunavut</td>                    <td>GST</td>         <td>0%</td>     <td>5%</td><td>5%</td></tr>
+        <tr data-prov="ON"><td>Ontario</td>                    <td>HST</td>         <td>8%</td>     <td>5%</td><td>13%</td></tr>
+        <tr data-prov="PE"><td>Prince Edward Island</td>       <td>HST</td>         <td>10%</td>    <td>5%</td><td>15%</td></tr>
+        <tr data-prov="QC"><td>Québec</td>                     <td>GST + QST</td>   <td>9.975%</td> <td>5%</td><td>14.975%</td></tr>
+        <tr data-prov="SK"><td>Saskatchewan</td>               <td>GST + PST</td>   <td>6%</td>     <td>5%</td><td>11%</td></tr>
+        <tr data-prov="YT"><td>Yukon</td>                      <td>GST</td>         <td>0%</td>     <td>5%</td><td>5%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const PROVINCE_DATA = {
+      AB: [{ label:'GST', rate:5,     subtractTips:true  }],
+      BC: [{ label:'GST', rate:5,     subtractTips:true  }, { label:'PST', rate:7,     subtractTips:true  }],
+      MB: [{ label:'GST', rate:5,     subtractTips:true  }, { label:'PST', rate:7,     subtractTips:true  }],
+      NT: [{ label:'GST', rate:5,     subtractTips:true  }],
+      NU: [{ label:'GST', rate:5,     subtractTips:true  }],
+      QC: [{ label:'GST', rate:5,     subtractTips:true  }, { label:'QST', rate:9.975, subtractTips:false }],
+      SK: [{ label:'GST', rate:5,     subtractTips:true  }, { label:'PST', rate:6,     subtractTips:true  }],
+      YT: [{ label:'GST', rate:5,     subtractTips:true  }],
+      NB: [{ label:'HST', rate:15,    subtractTips:true  }],
+      NL: [{ label:'HST', rate:15,    subtractTips:true  }],
+      NS: [{ label:'HST', rate:14,    subtractTips:true  }],
+      ON: [{ label:'HST', rate:13,    subtractTips:true  }],
+      PE: [{ label:'HST', rate:15,    subtractTips:true  }],
+    };
+
+    function fmt(n) { return n.toFixed(2); }
+
+    function onProvinceChange() {
+      const prov = document.getElementById('province').value;
+      // Highlight ref table
+      document.querySelectorAll('#ref-table tr[data-prov]').forEach(row => {
+        row.classList.toggle('ref-highlight', row.dataset.prov === prov);
+      });
+      if (!prov) { document.getElementById('tax-rows').innerHTML = ''; return; }
+      renderTaxRows(PROVINCE_DATA[prov]);
+    }
+
+    function renderTaxRows(taxes) {
+      const container = document.getElementById('tax-rows');
+      container.innerHTML = '';
+      taxes.forEach((t, i) => {
+        const cls = i === 0 ? 'tax-row-title' : 'tax-row-title t2';
+        container.innerHTML += `
+          <div class="tax-row">
+            <div class="${cls}">Tax ${i+1}</div>
+            <div class="row-3">
+              <div>
+                <label>Name</label>
+                <input type="text" id="tax-name-${i}" value="${t.label}" />
+              </div>
+              <div>
+                <label>Rate (%)</label>
+                <input type="number" id="tax-rate-${i}" value="${t.rate}" step="0.001" />
+              </div>
+              <div>
+                <label>Reclaim (%)</label>
+                <input type="number" id="tax-reclaim-${i}" value="" step="1" placeholder="Auto" />
+              </div>
+            </div>
+            <div class="checkbox-row">
+              <input type="checkbox" id="tax-tips-${i}" ${t.subtractTips ? 'checked' : ''} />
+              <label for="tax-tips-${i}" style="margin:0;">Subtract Tips from gross for this tax</label>
+            </div>
+          </div>`;
+      });
+    }
+
+    function getTaxRows() {
+      const rows = [];
+      let i = 0;
+      while (document.getElementById('tax-name-' + i)) {
+        rows.push({
+          label:           document.getElementById('tax-name-' + i).value || ('Tax ' + (i+1)),
+          rate:            parseFloat(document.getElementById('tax-rate-' + i).value) || 0,
+          subtractTips:    document.getElementById('tax-tips-' + i).checked,
+          reclaimOverride: document.getElementById('tax-reclaim-' + i).value.trim(),
+        });
+        i++;
+      }
+      return rows;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('calculateBtn').addEventListener('click', calculate);
+    });
+
+    function calculate() {
+      const gross      = parseFloat(document.getElementById('gross-ca').value);
+      const tips       = parseFloat(document.getElementById('tips').value) || 0;
+      const expTypePct = parseFloat(document.getElementById('expense-type').value) / 100;
+      const receiptPct = parseFloat(document.getElementById('receipt-status').value) / 100;
+      const tipsMode   = document.getElementById('tips-mode').value;
+      const cards      = document.getElementById('cards');
+      const fmlOut     = document.getElementById('formula-out');
+      const taxes      = getTaxRows();
+
+      if (isNaN(gross) || gross <= 0 || taxes.length === 0) {
+        cards.style.display = 'none'; fmlOut.innerHTML = ''; return;
+      }
+
+      const combined = taxes.reduce((s, t) => s + t.rate, 0) / 100;
+
+      const results = taxes.map(t => {
+        const shouldSubtract = tipsMode === 'per-tax' && t.subtractTips;
+        const adjGross = shouldSubtract ? gross - tips : gross;
+        const net      = adjGross / (1 + combined);
+        const amount   = net * (t.rate / 100);
+        const rPct     = t.reclaimOverride !== '' && !isNaN(parseFloat(t.reclaimOverride))
+          ? parseFloat(t.reclaimOverride) / 100
+          : expTypePct * receiptPct;
+        const rec = amount * rPct;
+        return { ...t, adjGross, net, amount, rec, rPct, shouldSubtract };
+      });
+
+      const r1 = results[0], r2 = results[1] || null;
+
+      // Tax 1 card
+      document.getElementById('lbl-tax1').textContent = r1.label + ' (' + r1.rate + '%)';
+      document.getElementById('val-tax1').textContent = fmt(r1.amount);
+      document.getElementById('sub-tax1').textContent = 'Reclaim (' + (r1.rPct*100).toFixed(0) + '%): ' + fmt(r1.rec);
+
+      // Tax 2 card
+      const card2 = document.getElementById('card2');
+      if (r2) {
+        card2.style.display = 'block';
+        document.getElementById('lbl-tax2').textContent = r2.label + ' (' + r2.rate + '%)';
+        document.getElementById('val-tax2').textContent = fmt(r2.amount);
+        document.getElementById('sub-tax2').textContent = 'Reclaim (' + (r2.rPct*100).toFixed(0) + '%): ' + fmt(r2.rec);
+      } else {
+        card2.style.display = 'none';
+      }
+
+      // Net / Base card — per tax if different bases
+      const netContent = document.getElementById('val-net-content');
+      const allSameBase = results.every(t => t.adjGross === r1.adjGross);
+      if (allSameBase) {
+        netContent.innerHTML = '<div class="card-value">' + fmt(r1.net) + '</div>';
+      } else {
+        netContent.innerHTML = results.map(t =>
+          '<div class="card-net-multi">' + t.label + ': ' + fmt(t.net) + '</div>'
+        ).join('');
+      }
+
+      document.getElementById('val-reclaim').textContent = fmt(results.reduce((s, t) => s + t.rec, 0));
+      cards.style.display = 'grid';
+
+      // Formula
+      let fml = '<div class="formula-hint">';
+      results.forEach(t => {
+        const adjLabel = t.shouldSubtract && tips > 0
+          ? fmt(gross) + ' &minus; ' + fmt(tips) + ' = ' + fmt(t.adjGross)
+          : fmt(gross);
+        fml += '<b>' + t.label + ':</b> NET = ' + adjLabel + ' / (1 + ' + combined.toFixed(5) + ') = ' + fmt(t.net) + '<br>';
+        fml += '&nbsp;&nbsp;' + t.label + ' = ' + fmt(t.net) + ' &times; ' + (t.rate/100).toFixed(5) + ' = ' + fmt(t.amount);
+        fml += ' | Reclaim = ' + fmt(t.amount) + ' &times; ' + (t.rPct*100).toFixed(0) + '% = ' + fmt(t.rec) + '<br>';
+      });
+      if (tips > 0 && tipsMode === 'per-tax') fml += '<span class="tips-note">Tips ' + fmt(tips) + ': applied per-tax (per tax authority)</span><br>';
+      if (tips > 0 && tipsMode === 'ignore')  fml += '<span class="tips-note">Tips ignored (Standard mode)</span><br>';
+      fml += '</div>';
+
+      // Proof per tax
+      let proofHtml = '<div class="proof-ok">';
+      let allOk = true;
+      results.forEach(t => {
+        const check = t.net * (1 + combined);
+        const diff  = Math.abs(check - t.adjGross);
+        const ok    = diff < 0.005;
+        if (!ok) allOk = false;
+        proofHtml += (ok ? '✓ ' : '⚠ ') + t.label + ': NET ' + fmt(t.net) + ' &times; (1 + ' + combined.toFixed(5) + ') = ' + fmt(check) + ' = ' + fmt(t.adjGross) + (ok ? ' ✓' : ' ✗') + '<br>';
+      });
+      proofHtml += '</div>';
+      if (!allOk) proofHtml = proofHtml.replace('proof-ok', 'proof-fail');
+
+      fmlOut.innerHTML = fml + proofHtml;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" type="text/css" href="index.css" />
+</head>
+<body>
+  <div class="ise-extension">
+    <div class="ise-extension-content">
+      <div class="app-shell">
+
+        <aside class="sidebar">
+          <div class="brand">
+            <div class="brand-title">VAT Calculator</div>
+            <div class="brand-subtitle"></div>
+          </div>
+          <button class="nav-btn active" data-target="vat-single.html">Single Tax</button>
+          <button class="nav-btn" data-target="vat-canada.html">Canada (GST/HST/QST)</button>
+        </aside>
+
+        <main class="main-panel">
+          <iframe id="toolFrame" class="tool-frame" src="vat-single.html" title="VAT Calculator"></iframe>
+        </main>
+
+      </div>
+    </div>
+  </div>
+  <script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #dfe4ea !important;
+  color: #111111 !important;
+}
+
+.ise-extension {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.ise-extension-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #dfe4ea !important;
+  color: #111111 !important;
+  border-top: 1px solid #333333;
+  overflow: hidden;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  height: 100%;
+}
+
+.sidebar {
+  background: #0f1720;
+  color: #ffffff;
+  padding: 18px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.brand {
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.brand-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.brand-subtitle {
+  margin-top: 4px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.nav-btn {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  background: #17212b;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.nav-btn:hover { background: #1f2d3a; }
+.nav-btn.active { background: #1a73e8; border-color: #1a73e8; }
+
+.main-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tool-frame {
+  width: 100%;
+  flex: 1;
+  border: none;
+  background: #ffffff;
+}
